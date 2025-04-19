@@ -1,0 +1,27 @@
+name: Extract ZIP File
+
+on:
+  push:
+    paths:
+      - '*.zip'
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Find ZIP file
+        id: find-zip
+        run: echo "zip_file=$(ls *.zip | head -1)" >> $GITHUB_OUTPUT
+      
+      - name: Extract ZIP file
+        run: unzip -o ${{ steps.find-zip.outputs.zip_file }}
+      
+      - name: Commit extracted files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Extract ZIP file" || echo "No changes to commit"
+          git push
